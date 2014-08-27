@@ -36,6 +36,9 @@ namespace GameLib
 
         GAMELIB_API GameMap::Populated GetPlayerTurn();
         
+        GAMELIB_API std::string GetMapDescription();
+
+        GAMELIB_API std::string GetTurnDescription();
 
     private:
 

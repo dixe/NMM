@@ -41,7 +41,7 @@ void ServerPlayer::Receive(char* buffer, int len)
     recv(playerSocket, buffer,len,0);
 }
 
-void ServerPlayer::Send(char* buffer, int len)
+void ServerPlayer::Send(const char* buffer, int len)
 {
     send(playerSocket,buffer,len,0);
 }

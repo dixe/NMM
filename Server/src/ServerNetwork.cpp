@@ -93,7 +93,7 @@ bool ServerNetwork::AcceptNewClient(unsigned int &id)
 
     if( clientSocket != INVALID_SOCKET)
     {
-        // disable nagle on the clietn socket
+        // disable nagle on the client socket
         char value = 1;
         setsockopt(clientSocket, IPPROTO_TCP, TCP_NODELAY, &value, sizeof(value));
 

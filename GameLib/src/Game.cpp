@@ -177,18 +177,39 @@ bool GameLib::Game::Move( Position fromPos, Position toPos, GameMap::Populated p
     int to = map.FindNodeId(toPos);
     if(legal && from != -1 && to != -1)
     {
-        
+
         map.Move(map.mapNodes[from], map.mapNodes[to]);
         bool formedMill = rules.FormedMill(map,toPos);
         NextTurn(player, formedMill, &toPos);
         moved = true;
-        
+
         //check for game over
         CheckGameOver();
     }
-    
+
 
     return moved;
+}
+
+std::string GameLib::Game::GetMapDescription()
+{
+    return map.MapDescription();
+}
+
+std::string GameLib::Game::GetTurnDescription()
+{
+    std::string retString;
+    
+    if( mTurnState == PLAYER1PLACE ||  mTurnState == PLAYER1MOVE ||  mTurnState == PLAYER1REMOVE)
+    {
+        retString = "1";
+    }
+    else
+    {
+        retString = "2";
+    }
+
+    return retString;
 }
 
 void GameLib::Game::PlayerMove(GameMap::Populated PLAYER, int pressed)

@@ -55,6 +55,8 @@ private:
 
     Message ErrorMessage(int error);
 
+    void RespondRequest(Message message, ServerPlayer aPlayer);
+
     // given a message and a player that send it,
     // execute the message and respond to the player
     void ExecAndRespond(GameSession::Message message, ServerPlayer player);

@@ -54,7 +54,6 @@ void GameSession::Update(void)
 
 }
 
-
 GameSession::Message GameSession::ParseMessage(char *buffer)
 {
     using namespace std;
@@ -92,7 +91,7 @@ GameSession::Message GameSession::ParseMessage(char *buffer)
 GameSession::Message GameSession::ParseMove(std::vector<std::string> words)
 {
     // words[0] is 1xy 
-    //words[0][2] is the y 
+    // words[0][2] is the y 
     switch(words[0][2])
     {
     case '1': // move, the buffer len should be over 9 chars
@@ -189,8 +188,26 @@ GameSession::Message GameSession::ParseMove(std::vector<std::string> words)
 
 GameSession::Message GameSession::ParseRequest(std::vector<std::string> words)
 {
-    //TODO
-    return Message();
+
+    // create the move message
+    Message retmes = Message();
+    retmes.type = REQUEST;
+    switch (words[0][2])
+    {
+    case '1':
+        retmes.request = PLAYERINFO;
+        break;
+    case '2':
+        retmes.request = MAPINFO;
+        break;
+    case '3':
+        retmes.request = TURNINFO;
+        break;
+    default:
+        return ErrorMessage(0);
+        break;
+    }
+    return retmes;
 }
 
 GameSession::Message GameSession::ErrorMessage(int error)
@@ -199,6 +216,38 @@ GameSession::Message GameSession::ErrorMessage(int error)
     Message retmes = Message();
     retmes.type = EMPTY;
     return retmes;
+}
+
+void GameSession::RespondRequest(Message message, ServerPlayer aPlayer)
+{
+    char buffer[16];
+    switch (message.request)
+    {
+    case  PLAYERINFO:
+        {
+            std::string infostring = "501 ";
+            char playerNum = (int)aPlayer.GetPlayer() + '1';
+            infostring.append(sizeof(playerNum),playerNum);
+            aPlayer.Send(infostring.c_str(),infostring.length());
+            break;
+        }
+    case MAPINFO:
+        {
+            std::string infostring = "502 ";
+            infostring.append(game.GetMapDescription());
+            aPlayer.Send(infostring.c_str(),infostring.length());
+            break;
+        }
+    case TURNINFO:
+        {
+            std::string infostring = "503 ";
+            infostring.append(game.GetTurnDescription());
+            aPlayer.Send(infostring.c_str(),infostring.length());
+            break;
+        }
+    default:
+        break;
+    }
 }
 
 void GameSession::ExecAndRespond(Message message, ServerPlayer player)
@@ -215,6 +264,9 @@ void GameSession::ExecAndRespond(Message message, ServerPlayer player)
 
     case PLACE:
         ExecAndRespondPlace(message,player);
+        break;
+    case REQUEST:
+        RespondRequest(message, player);
         break;
     default:
         break;
@@ -292,20 +344,21 @@ void GameSession::ExecAndRespondReMove(Message message, ServerPlayer aPlayer)
         MoveErrorRespond(aPlayer);
     }
 }
+
 void GameSession::MoveErrorRespond(ServerPlayer aPlayer)
 {
-     if(aPlayer.GetPlayer() != game.GetPlayerTurn())
-        {
-            // not aPlayers turn
-            char* buffer = "303";
-            aPlayer.Send(buffer,3); 
-        }
-        else
-        {
-            // must be illegal move
-            char* buffer = "302";
-            aPlayer.Send(buffer,3); 
-        }
+    if(aPlayer.GetPlayer() != game.GetPlayerTurn())
+    {
+        // not aPlayers turn
+        char* buffer = "303";
+        aPlayer.Send(buffer,3); 
+    }
+    else
+    {
+        // must be illegal move
+        char* buffer = "302";
+        aPlayer.Send(buffer,3); 
+    }
 }
 
 void GameSession::UpdatePlayers()

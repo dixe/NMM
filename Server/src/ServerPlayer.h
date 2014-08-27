@@ -13,7 +13,7 @@ public:
 
     bool Initialize(SOCKET aPlayerSocket, GameLib::GameMap::Populated player);
     void Receive(char* buffer, int len);
-    void ServerPlayer::Send(char* buffer, int len);
+    void ServerPlayer::Send(const char* buffer, int len);
     bool isInitialized();
 
     GameLib::GameMap::Populated GetPlayer();

@@ -28,6 +28,8 @@ namespace GameLib
             Position downPosition; // node that is down
         };
 
+        std::string MapDescription();
+
         // node id, correspond to index into mapNodes vector
         std::vector<Node> mapNodes;
 
